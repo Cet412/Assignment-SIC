@@ -18,3 +18,5 @@ Advantages of Using VS Code for MicroPython ESP32:
 
 ✅ Compatible with Windows, macOS, and Linux, making it suitable for various development environments.
 
+if you want to know more how to use micropython for esp32 and esp8266 you can use this youtube video for references:
+https://youtu.be/YOeV14SESls?si=THof0UIG2KQaEbM4
