@@ -4,7 +4,7 @@ Assignment-SIC is an IoT project that integrates an ESP32-based system with a Fl
 
 The ESP32 sends real-time data to Ubidots for visualization and analysis, while a Flask-based API ensures seamless data logging in MongoDB Atlas, providing structured storage and easy retrieval.
 
-🔗 Ubidots Dashboard: Click Here
+📊 Ubidots Dashboard: [Click Here](https://stem.ubidots.com/app/dashboards/public/dashboard/CSRJnLG0DGbz7nemuR8FVPdG1Z7ChBzXIPtOOYbsBPs?navbar=true&contextbar=true&datePicker=true&devicePicker=true&displayTitle=true)
 
 # Features:
 
