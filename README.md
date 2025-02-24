@@ -1,4 +1,4 @@
-Overview
+# Overview
 
 Assignment-SIC is an IoT project that integrates an ESP32-based system with a Flask backend to efficiently collect, transmit, and store environmental and motion sensor data. This system utilizes the DHT11 sensor for temperature and humidity measurements, and the MQ135 sensor for air quality monitoring.
 
@@ -6,7 +6,7 @@ The ESP32 sends real-time data to Ubidots for visualization and analysis, while 
 
 🔗 Ubidots Dashboard: Click Here
 
-Features:
+# Features:
 
 📡 Real-time data transmission from ESP32 to Ubidots using MQTT/REST API.
 
@@ -18,7 +18,7 @@ Features:
 
 🛠 Efficient ESP32 programming using MicroPython on VS Code.
 
-Tech Stack:
+# Tech Stack:
 
 ESP32 (MicroPython)
 
