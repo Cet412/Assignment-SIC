@@ -2,11 +2,11 @@ import network
 import urequests
 import time
 import dht
-from machine import Pin
+from machine import Pin, ADC
 
 # Konfigurasi WiFi
-SSID = "Infinix NOTE 30"
-PASSWORD = "10902493"
+SSID = "SBSN"
+PASSWORD = "*#aulaSBSN#"
 
 # Konfigurasi Ubidots
 UBIDOTS_TOKEN = "BBUS-UjHRHwATDTiBaDbqb9ZREBg4FpDOxb"
@@ -14,10 +14,14 @@ DEVICE_LABEL = "esp32"
 UBIDOTS_URL = f"http://industrial.api.ubidots.com/api/v1.6/devices/{DEVICE_LABEL}/"
 
 # Konfigurasi Flask Server
-FLASK_URL = "http://192.168.46.88:5000/receive_data"  # Sesuaikan dengan IP Flask
+FLASK_URL = "http://192.168.10.173:5000/receive_data"  # Sesuaikan dengan IP Flask
 
 # Inisialisasi Sensor DHT11
-sensor = dht.DHT11(Pin(4))  # DHT11 terhubung ke GPIO4
+sensor_dht = dht.DHT11(Pin(4))  # DHT11 di GPIO4
+
+# Inisialisasi Sensor MQ135
+mq135 = ADC(Pin(35))  # MQ135 di GPIO35 (hanya pin ADC)
+mq135.atten(ADC.ATTN_11DB)  # Baca rentang 0-3.3V
 
 # Koneksi ke WiFi
 def connect_wifi():
@@ -30,25 +34,27 @@ def connect_wifi():
     print("Terhubung ke WiFi:", wlan.ifconfig())
 
 # Kirim data ke Ubidots
-def send_to_ubidots(temp, humidity):
+def send_to_ubidots(temp, humidity, gas):
     headers = {
         "Content-Type": "application/json",
         "X-Auth-Token": UBIDOTS_TOKEN
     }
     data = {
         "temperature": {"value": temp},
-        "humidity": {"value": humidity}
+        "humidity": {"value": humidity},
+        "gas": {"value": gas}
     }
     response = urequests.post(UBIDOTS_URL, json=data, headers=headers)
     print("Response Ubidots:", response.text)
     response.close()
 
 # Kirim data ke Flask
-def send_to_flask(temp, humidity):
+def send_to_flask(temp, humidity, gas):
     headers = {"Content-Type": "application/json"}
     data = {
         "temperature": temp,
-        "humidity": humidity
+        "humidity": humidity,
+        "gas": gas
     }
     try:
         response = urequests.post(FLASK_URL, json=data, headers=headers)
@@ -61,15 +67,20 @@ def send_to_flask(temp, humidity):
 connect_wifi()
 while True:
     try:
-        sensor.measure()
-        temp = sensor.temperature()
-        humidity = sensor.humidity()
+        # Baca sensor DHT11
+        sensor_dht.measure()
+        temp = sensor_dht.temperature()
+        humidity = sensor_dht.humidity()
 
-        print(f"Suhu: {temp}°C | Kelembapan: {humidity}%")
+        # Baca sensor MQ135
+        gas_value = mq135.read()  # Baca nilai ADC (0-4095)
+        gas_voltage = gas_value * (3.3 / 4095)  # Konversi ke voltase
+
+        print(f"Suhu: {temp}°C | Kelembapan: {humidity}% | Gas: {gas_value} ({gas_voltage:.2f}V)")
 
         # Kirim ke Ubidots & Flask
-        send_to_ubidots(temp, humidity)
-        send_to_flask(temp, humidity)
+        send_to_ubidots(temp, humidity, gas_value)
+        send_to_flask(temp, humidity, gas_value)
 
     except Exception as e:
         print("Error:", e)
